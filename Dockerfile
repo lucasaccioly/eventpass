@@ -26,8 +26,11 @@ FROM dunglas/frankenphp:php8.4
 RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && install-php-extensions pdo_pgsql redis gd zip pcntl \
     && apt-get update \
-    && apt-get install -y --no-install-recommends supervisor \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends supervisor libcap2-bin \
+    && rm -rf /var/lib/apt/lists/* \
+    # The binary carries cap_net_bind_service (for ports < 1024); hosts that drop
+    # capabilities (Render) refuse to exec it (EPERM). $PORT is high, so drop it.
+    && setcap -r /usr/local/bin/frankenphp
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
