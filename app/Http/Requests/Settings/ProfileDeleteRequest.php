@@ -17,7 +17,8 @@ class ProfileDeleteRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        // A demo visitor never saw their random password; deleting the sandbox needs no proof.
+        return $this->user()?->is_demo ? [] : [
             'password' => $this->currentPasswordRules(),
         ];
     }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -42,6 +43,10 @@ class Event extends Model
         // A gate device must stop working the moment its event is gone.
         static::deleting(function (Event $event): void {
             $event->deviceTokens()->delete();
+
+            Storage::disk('local')->delete($event->registrations()->pluck('public_id')
+                ->map(fn (string $id): string => "tickets/{$id}.pdf")
+                ->all());
         });
     }
 

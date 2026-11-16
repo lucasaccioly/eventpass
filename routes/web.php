@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DemoController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventStatsStreamController;
@@ -12,6 +13,8 @@ use App\Http\Controllers\TicketStreamController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'welcome')->name('home');
+
+Route::post('demo', DemoController::class)->middleware(['guest', 'throttle:demo'])->name('demo.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('dashboard', '/events')->name('dashboard');
