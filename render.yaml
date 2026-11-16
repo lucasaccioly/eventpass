@@ -5,6 +5,7 @@ services:
       name: eventpass
       runtime: docker
       plan: free
+      region: virginia # same AWS region as the Neon database (us-east-1)
       healthCheckPath: /up
       envVars:
           - key: APP_KEY
@@ -40,5 +41,6 @@ services:
     - type: keyvalue
       name: eventpass-redis
       plan: free
+      region: virginia
       ipAllowList: []
       maxmemoryPolicy: noeviction # queued jobs must never be evicted
