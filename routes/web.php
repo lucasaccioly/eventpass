@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventStatsStreamController;
+use App\Http\Controllers\GateTestController;
 use App\Http\Controllers\PublicEventController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\TicketController;
@@ -15,7 +17,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('dashboard', '/events')->name('dashboard');
     Route::resource('events', EventController::class);
     Route::get('events/{event}/stream', EventStatsStreamController::class)->name('events.stream');
+    Route::post('events/{event}/devices', [DeviceController::class, 'store'])->name('devices.store');
+    Route::delete('events/{event}/devices/{device}', [DeviceController::class, 'destroy'])
+        ->whereNumber('device')
+        ->name('devices.destroy');
+    Route::post('events/{event}/devices/test', GateTestController::class)->name('devices.test');
 });
+
+// Gate staff: no session, the page holds a device token (see routes/api.php).
+Route::inertia('portaria', 'gate')->name('gate');
 
 // Participant side: no account, the event slug and the ticket ULID are the keys.
 Route::get('e/{event:slug}', [PublicEventController::class, 'show'])->name('public.events.show');

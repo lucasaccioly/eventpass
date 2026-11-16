@@ -40,6 +40,7 @@ class EventController extends Controller
         return Inertia::render('events/show', [
             'event' => $event,
             'stats' => $event->stats(),
+            'devices' => $event->deviceTokens()->latest()->get(['id', 'name', 'created_at', 'last_used_at']),
         ]);
     }
 

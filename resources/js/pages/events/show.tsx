@@ -3,6 +3,8 @@ import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import EventController from '@/actions/App/Http/Controllers/EventController';
 import EventStatsStreamController from '@/actions/App/Http/Controllers/EventStatsStreamController';
+import type { Device } from '@/components/gate-devices';
+import GateDevices from '@/components/gate-devices';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import { useSse } from '@/hooks/use-sse';
@@ -13,9 +15,11 @@ import type { EventItem, EventStats } from '@/types';
 export default function EventShow({
     event,
     stats: initialStats,
+    devices,
 }: {
     event: EventItem;
     stats: EventStats;
+    devices: Device[];
 }) {
     const [stats, setStats] = useState(initialStats);
     useSse<EventStats>(
@@ -101,6 +105,8 @@ export default function EventShow({
                         </ul>
                     )}
                 </section>
+
+                <GateDevices eventId={event.id} devices={devices} />
             </div>
         </>
     );

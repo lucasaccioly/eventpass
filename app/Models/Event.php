@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * @property int $id
@@ -36,6 +38,27 @@ class Event extends Model
         static::creating(function (Event $event): void {
             $event->slug ??= Str::slug($event->name).'-'.Str::lower(Str::random(5));
         });
+
+        // A gate device must stop working the moment its event is gone.
+        static::deleting(function (Event $event): void {
+            $event->deviceTokens()->delete();
+        });
+    }
+
+    /** The only ability a gate device token carries. */
+    public function checkinAbility(): string
+    {
+        return "checkin:{$this->id}";
+    }
+
+    /**
+     * Gate devices are the owner's Sanctum tokens scoped to this event.
+     *
+     * @return MorphMany<PersonalAccessToken, User>
+     */
+    public function deviceTokens(): MorphMany
+    {
+        return $this->user->tokens()->whereJsonContains('abilities', $this->checkinAbility());
     }
 
     /**
