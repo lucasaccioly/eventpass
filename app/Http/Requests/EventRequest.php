@@ -42,6 +42,16 @@ class EventRequest extends FormRequest
                 if ($this->isMethod('post') && $this->user()?->events()->count() >= $max) {
                     $validator->errors()->add('name', "Limite de {$max} eventos atingido.");
                 }
+
+                $event = $this->route('event');
+
+                if ($event instanceof Event && $validator->errors()->isEmpty()) {
+                    $registered = $event->registrations()->count();
+
+                    if ($this->integer('capacity') < $registered) {
+                        $validator->errors()->add('capacity', "Já existem {$registered} inscritos; as vagas não podem ser menos que isso.");
+                    }
+                }
             },
         ];
     }

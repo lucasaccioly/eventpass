@@ -15,7 +15,7 @@ class EventController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('events/index', [
-            'events' => $request->user()->events()->orderBy('starts_at')->get(),
+            'events' => $request->user()->events()->withCount('registrations')->orderBy('starts_at')->get(),
         ]);
     }
 
