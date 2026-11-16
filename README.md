@@ -9,7 +9,6 @@ Inscrição, ingresso em PDF e portaria de eventos, do cadastro ao check-in.
 
 **Demo:** em breve (o link entra aqui assim que o deploy estiver no ar).
 
-
 ## O que o projeto mostra
 
 | Tema                                                                      | Onde está                                                                                                                                                                  |
