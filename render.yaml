@@ -21,6 +21,8 @@ services:
                 type: keyvalue
                 name: eventpass-redis
                 property: connectionString
+          - key: APP_NAME
+            value: EventPass
           - key: APP_ENV
             value: production
           - key: APP_DEBUG

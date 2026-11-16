@@ -7,6 +7,7 @@ services:
             - '8000:8000'
         environment:
             PORT: 8000
+            APP_NAME: EventPass
             APP_ENV: production
             APP_DEBUG: 'false'
             APP_KEY: ${APP_KEY:?set APP_KEY}
