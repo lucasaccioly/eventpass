@@ -39,12 +39,7 @@ class EventController extends Controller
 
         return Inertia::render('events/show', [
             'event' => $event,
-            'stats' => [
-                'registered' => 0,
-                'checked_in' => 0,
-                'capacity' => $event->capacity,
-                'latest' => [],
-            ],
+            'stats' => $event->stats(),
         ]);
     }
 

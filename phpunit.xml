@@ -28,6 +28,8 @@
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="EVENTPASS_STREAM_SECONDS" value="1"/>
+        <env name="EVENTPASS_STREAM_POLL_MS" value="50"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>

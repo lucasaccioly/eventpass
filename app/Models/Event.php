@@ -55,6 +55,29 @@ class Event extends Model
     }
 
     /**
+     * Dashboard numbers, shared by the page's first render and its SSE stream.
+     *
+     * @return array{registered: int, checked_in: int, capacity: int, latest: array<int, array{name: string, checked_in_at: string}>}
+     */
+    public function stats(): array
+    {
+        $checkedIn = $this->registrations()->whereNotNull('checked_in_at');
+
+        return [
+            'registered' => $this->registrations()->count(),
+            'checked_in' => (clone $checkedIn)->count(),
+            'capacity' => $this->capacity,
+            'latest' => $checkedIn->latest('checked_in_at')->latest('id')->limit(10)->get(['name', 'checked_in_at'])
+                ->map(fn (Registration $r): array => [
+                    'name' => $r->name,
+                    'checked_in_at' => $r->checked_in_at?->toIso8601String() ?? '',
+                ])
+                ->values()
+                ->all(),
+        ];
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array

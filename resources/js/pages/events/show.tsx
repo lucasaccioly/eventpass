@@ -1,19 +1,28 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import { ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import EventController from '@/actions/App/Http/Controllers/EventController';
+import EventStatsStreamController from '@/actions/App/Http/Controllers/EventStatsStreamController';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
-import { formatDateTime } from '@/lib/dates';
+import { useSse } from '@/hooks/use-sse';
+import { formatDateTime, formatTime } from '@/lib/dates';
 import { edit, index } from '@/routes/events';
 import type { EventItem, EventStats } from '@/types';
 
 export default function EventShow({
     event,
-    stats,
+    stats: initialStats,
 }: {
     event: EventItem;
     stats: EventStats;
 }) {
+    const [stats, setStats] = useState(initialStats);
+    useSse<EventStats>(
+        EventStatsStreamController.url(event.id),
+        'stats',
+        setStats,
+    );
     const publicUrl = `/e/${event.slug}`;
 
     return (
@@ -63,6 +72,35 @@ export default function EventShow({
                         value={stats.capacity - stats.registered}
                     />
                 </div>
+
+                <section className="rounded-xl border p-4">
+                    <h2 className="mb-3 flex items-center gap-2 font-medium">
+                        <span className="relative flex size-2">
+                            <span className="absolute inline-flex size-full animate-ping rounded-full bg-green-500 opacity-75" />
+                            <span className="relative inline-flex size-2 rounded-full bg-green-500" />
+                        </span>
+                        Últimas entradas
+                    </h2>
+                    {stats.latest.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">
+                            Nenhum check-in ainda.
+                        </p>
+                    ) : (
+                        <ul className="divide-y text-sm" aria-live="polite">
+                            {stats.latest.map((entry) => (
+                                <li
+                                    key={`${entry.name}-${entry.checked_in_at}`}
+                                    className="flex justify-between py-2"
+                                >
+                                    <span>{entry.name}</span>
+                                    <span className="text-muted-foreground tabular-nums">
+                                        {formatTime(entry.checked_in_at)}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </section>
             </div>
         </>
     );
