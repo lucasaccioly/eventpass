@@ -9,6 +9,8 @@ Inscrição, ingresso em PDF e portaria de eventos, do cadastro ao check-in.
 
 **Demo:** https://eventpass-gsos.onrender.com — clique em **Entrar como demo**. É um serviço gratuito que dorme quando ninguém usa, então a primeira visita pode levar uns 50 segundos.
 
+![Demo: conta demo, inscrição pública, ingresso em PDF e check-in na portaria](docs/demo.gif)
+
 ## O que o projeto mostra
 
 | Tema                                                                      | Onde está                                                                                                                                                                  |
