@@ -7,7 +7,7 @@ Inscrição, ingresso em PDF e portaria de eventos, do cadastro ao check-in.
 ![Laravel 13](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
 ![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)
 
-**Demo:** em breve (o link entra aqui assim que o deploy estiver no ar).
+**Demo:** https://eventpass-gsos.onrender.com — clique em **Entrar como demo**. É um serviço gratuito que dorme quando ninguém usa, então a primeira visita pode levar uns 50 segundos.
 
 ## O que o projeto mostra
 
