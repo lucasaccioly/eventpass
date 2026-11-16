@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Render (and most PaaS) terminate TLS at a proxy in front of the container.
+        $middleware->trustProxies(at: '*');
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         $middleware->web(append: [

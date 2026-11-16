@@ -1,0 +1,12 @@
+{
+	auto_https off
+	frankenphp {
+		# Each open SSE stream holds a PHP thread for up to 30 s; the default (2 x CPU) is ~2 on a tiny instance.
+		num_threads 16
+	}
+}
+
+:{$PORT:8000} {
+	root * /app/public
+	php_server
+}

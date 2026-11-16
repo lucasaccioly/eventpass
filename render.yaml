@@ -1,0 +1,43 @@
+# Render Blueprint: one Docker web service (web + Horizon + scheduler) and a Key Value (Redis).
+# Postgres lives on Neon; paste its connection string into DB_URL when Render asks.
+services:
+  - type: web
+    name: eventpass
+    runtime: docker
+    plan: free
+    healthCheckPath: /up
+    envVars:
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: DB_URL
+        sync: false
+      - key: HORIZON_ALLOWED_EMAILS
+        sync: false
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: eventpass-redis
+          property: connectionString
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_LOCALE
+        value: pt_BR
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: QUEUE_CONNECTION
+        value: redis
+      - key: CACHE_STORE
+        value: redis
+      - key: SESSION_DRIVER
+        value: database
+      - key: LOG_CHANNEL
+        value: stderr
+
+  - type: keyvalue
+    name: eventpass-redis
+    plan: free
+    ipAllowList: []

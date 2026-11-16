@@ -1,0 +1,45 @@
+# Production-like stack: docker compose up --build, then open http://localhost:8000
+# Needs APP_KEY in your shell or a .env next to this file (php artisan key:generate --show).
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY:?set APP_KEY}
+      APP_URL: http://localhost:8000
+      APP_LOCALE: pt_BR
+      DB_CONNECTION: pgsql
+      DB_URL: pgsql://eventpass:eventpass@postgres:5432/eventpass
+      REDIS_URL: redis://redis:6379
+      QUEUE_CONNECTION: redis
+      CACHE_STORE: redis
+      SESSION_DRIVER: database
+      LOG_CHANNEL: stderr
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: eventpass
+      POSTGRES_USER: eventpass
+      POSTGRES_PASSWORD: eventpass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U eventpass"]
+      interval: 2s
+      retries: 30
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+
+volumes:
+  postgres:
