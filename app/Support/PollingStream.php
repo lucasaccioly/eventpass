@@ -21,6 +21,8 @@ final class PollingStream
     public static function response(string $event, Closure $snapshot, ?Closure $done = null): StreamedResponse
     {
         return response()->eventStream(function () use ($event, $snapshot, $done) {
+            // PHP's default 30 s max_execution_time would kill a full window.
+            set_time_limit((int) config('eventpass.stream_seconds') + 15);
             $until = microtime(true) + (int) config('eventpass.stream_seconds');
             $pollMicros = (int) config('eventpass.stream_poll_ms') * 1000;
             $heartbeat = (int) config('eventpass.heartbeat_seconds');

@@ -22,7 +22,9 @@ RUN composer dump-autoload --no-dev --optimize \
 
 # 3. Runtime: FrankenPHP (web) + Horizon (queue) + scheduler, under supervisord.
 FROM dunglas/frankenphp:php8.4
-RUN install-php-extensions pdo_pgsql redis gd zip pcntl \
+# The image ships no php.ini; without one, display_errors is on in production.
+RUN cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+    && install-php-extensions pdo_pgsql redis gd zip pcntl \
     && apt-get update \
     && apt-get install -y --no-install-recommends supervisor \
     && rm -rf /var/lib/apt/lists/*

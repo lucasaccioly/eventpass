@@ -6,7 +6,8 @@ import { useEffect, useRef } from 'react';
  * The server closes each connection after a short window on purpose; the
  * browser's EventSource reconnects by itself, so this hook never closes on
  * error (unlike @laravel/stream-react's useEventStream, which would stop for
- * good). Pass `null` as the url to disconnect.
+ * good). It also disconnects while the tab is hidden. Pass `null` as the url
+ * to disconnect.
  */
 export function useSse<T>(
     url: string | null,
@@ -24,12 +25,28 @@ export function useSse<T>(
             return;
         }
 
-        const source = new EventSource(url);
+        let source: EventSource | null = null;
         const listener = (event: MessageEvent<string>) =>
             handler.current(JSON.parse(event.data) as T);
 
-        source.addEventListener(eventName, listener);
+        // A hidden tab holds no connection: each one ties up a PHP thread and
+        // keeps the free instance awake. Reopening sends a fresh snapshot.
+        const sync = () => {
+            if (document.visibilityState === 'visible' && source === null) {
+                source = new EventSource(url);
+                source.addEventListener(eventName, listener);
+            } else if (document.visibilityState === 'hidden' && source) {
+                source.close();
+                source = null;
+            }
+        };
 
-        return () => source.close();
+        sync();
+        document.addEventListener('visibilitychange', sync);
+
+        return () => {
+            document.removeEventListener('visibilitychange', sync);
+            source?.close();
+        };
     }, [url, eventName]);
 }

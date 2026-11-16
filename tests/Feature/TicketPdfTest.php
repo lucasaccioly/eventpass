@@ -78,3 +78,34 @@ it('redirects pending downloads to the ticket page', function () {
 
     Queue::assertNothingPushed();
 });
+
+it('re-queues a failed ticket when its page is opened', function () {
+    Queue::fake();
+    $registration = Registration::factory()->create(['ticket_status' => TicketStatus::Failed]);
+
+    $this->get(route('tickets.show', $registration))->assertOk();
+
+    expect($registration->refresh()->ticket_status)->toBe(TicketStatus::Pending);
+    Queue::assertPushed(GenerateTicketPdf::class, 1);
+});
+
+it('re-queues a ticket stuck in pending (lost job)', function () {
+    Queue::fake();
+    $registration = Registration::factory()->create();
+    $this->travel(3)->minutes();
+
+    $this->get(route('tickets.show', $registration))->assertOk();
+
+    Queue::assertPushed(GenerateTicketPdf::class, 1);
+    expect($registration->refresh()->updated_at->isToday())->toBeTrue()
+        ->and($registration->updated_at->diffInSeconds(now()))->toBeLessThan(5);
+});
+
+it('leaves a freshly pending ticket alone', function () {
+    Queue::fake();
+    $registration = Registration::factory()->create();
+
+    $this->get(route('tickets.show', $registration))->assertOk();
+
+    Queue::assertNothingPushed();
+});
