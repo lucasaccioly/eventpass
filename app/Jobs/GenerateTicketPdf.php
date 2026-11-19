@@ -21,6 +21,9 @@ class GenerateTicketPdf implements ShouldQueue
 
     public int $backoff = 5;
 
+    // A pruned demo account takes its registrations with it; there is no ticket left to render.
+    public bool $deleteWhenMissingModels = true;
+
     public function __construct(public Registration $registration) {}
 
     public function handle(): void

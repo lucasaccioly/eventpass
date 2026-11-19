@@ -109,3 +109,12 @@ it('leaves a freshly pending ticket alone', function () {
 
     Queue::assertNothingPushed();
 });
+
+it('drops the job quietly when the registration was deleted before it ran', function () {
+    $registration = Registration::factory()->create();
+    $job = new GenerateTicketPdf($registration);
+    $registration->delete();
+
+    // The sync queue serializes the job like a real worker, so the missing model surfaces here.
+    Queue::connection('sync')->push($job);
+})->throwsNoExceptions();
